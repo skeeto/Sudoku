@@ -28,6 +28,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     private static final float FONT_SIZE = 24f;
     private static final int CELL_SIZE = 40;
     private static final int PADDING = 10;
+    private static final int TIMEOUT = 1000;
 
     /* Work grid and the displayed grid. */
     private byte[][] grid;
@@ -40,6 +41,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     private Stack<Position> positions;
     private Stack<Position> used;
     private Position selected;
+    private long initTime;
 
     /**
      * Create a new Sudoku board.
@@ -65,16 +67,20 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
      * Create a new Sudoku puzzle.
      */
     public final void createSudoku() {
-        clear(grid);
-        initPositions();
-        System.out.println("Generating ...");
-        if (generate()) {
-            System.out.println("Done.");
-        } else {
-            System.out.println("Fail.");
+        while (true) {
+            try {
+                clear(grid);
+                initPositions();
+                initTime = System.currentTimeMillis();
+                System.out.println("Generating ...");
+                System.out.println("result = " + generate());
+                System.out.println("Eliminating ...");
+                eliminate();
+                break;
+            } catch (TimeoutException e) {
+                System.out.println("Timeout.");
+            }
         }
-        System.out.println("Eliminating ...");
-        eliminate();
         System.out.println("Givens: " + filled());
         System.out.println("Difficulty: " + difficulty());
         copy(grid, orig);
@@ -305,7 +311,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
      *
      * @return true if build was successful
      */
-    private boolean generate() {
+    private boolean generate() throws TimeoutException {
         Position pos1 = positions.pop();
         Position pos2 = mirror(pos1);
         used.push(pos1);
@@ -342,7 +348,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     /**
      * Try to eliminate some hints.
      */
-    private void eliminate() {
+    private void eliminate() throws TimeoutException {
         Collections.shuffle(used);
         while (!used.empty()) {
             Position pos1 = used.pop();
@@ -366,7 +372,11 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
      *
      * @return number of solutions
      */
-    private int numSolutions() {
+    private int numSolutions() throws TimeoutException {
+        if ((rng.nextInt(200) == 1)
+            && (System.currentTimeMillis() - initTime) > TIMEOUT) {
+            throw new TimeoutException();
+        }
         Position pos = null;
         for (byte y = 0; pos == null && y < 9; y++) {
             for (byte x = 0; pos == null && x < 9; x++) {
