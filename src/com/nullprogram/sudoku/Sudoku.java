@@ -61,7 +61,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     /**
      * Create a new Sudoku puzzle.
      */
-    public void createSudoku() {
+    public final void createSudoku() {
         initPositions();
         System.out.println("Generating ...");
         if (generate()) {
@@ -352,8 +352,11 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
 
     /**
      * Copy one grid to another.
+     *
+     * @param from origin grid
+     * @param to destination grid
      */
-    private void copy(byte[][] from, byte[][] to) {
+    private void copy(final byte[][] from, final byte[][] to) {
         for (byte y = 0; y < 9; y++) {
             for (byte x = 0; x < 9; x++) {
                 to[x][y] = from[x][y];
@@ -362,7 +365,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     }
 
     /** {@inheritDoc} */
-    public void keyTyped(KeyEvent e) {
+    public final void keyTyped(final KeyEvent e) {
         char c = e.getKeyChar();
         if ((selected != null) && (c >= 49) && (c <= 57)) {
             /* Number 1..9 */
@@ -376,17 +379,17 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     }
 
     /** {@inheritDoc} */
-    public void keyPressed(KeyEvent e) {
+    public void keyPressed(final KeyEvent e) {
         /* Do nothing. */
     }
 
     /** {@inheritDoc} */
-    public void keyReleased(KeyEvent e) {
+    public void keyReleased(final KeyEvent e) {
         /* Do nothing. */
     }
 
     /** {@inheritDoc} */
-    public void mouseReleased(final MouseEvent e) {
+    public final void mouseReleased(final MouseEvent e) {
         int px = (int) e.getPoint().getX();
         int py = (int) e.getPoint().getY();
         int x = (px - PADDING) / CELL_SIZE;
@@ -400,7 +403,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     }
 
     /** {@inheritDoc} */
-    public void mouseClicked(final MouseEvent e) {
+    public final void mouseClicked(final MouseEvent e) {
         requestFocusInWindow();
     }
 
