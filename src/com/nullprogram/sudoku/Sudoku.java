@@ -10,6 +10,10 @@ import java.awt.Graphics2D;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.RenderingHints;
+import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JComponent;
@@ -17,7 +21,7 @@ import javax.swing.JComponent;
 /**
  * A Sudoku board capable of generating puzzles and interacting.
  */
-public class Sudoku extends JComponent {
+public class Sudoku extends JComponent implements KeyListener, MouseListener {
 
     private static final long serialVersionUID = 5546778616302943600L;
 
@@ -28,10 +32,12 @@ public class Sudoku extends JComponent {
     /* Work grid and the displayed grid. */
     private byte[][] grid;
     private byte[][] display;
+    private byte[][] orig;
 
     private Random rng;
     private Position origin = new Position((byte) 0, (byte) 0);
     private Stack<Position> positions;
+    private Position selected;
 
     /**
      * Create a new Sudoku board.
@@ -39,6 +45,7 @@ public class Sudoku extends JComponent {
     public Sudoku() {
         grid = new byte[9][9];
         display = new byte[9][9];
+        orig = new byte[9][9];
         int side = CELL_SIZE * 9 + PADDING * 2;
         Dimension size = new Dimension(side, side);
         setPreferredSize(size);
@@ -46,6 +53,15 @@ public class Sudoku extends JComponent {
         setOpaque(true);
         setBackground(Color.white);
         rng = new Random();
+        addKeyListener(this);
+        addMouseListener(this);
+        selected = origin;
+    }
+
+    /**
+     * Create a new Sudoku puzzle.
+     */
+    public void createSudoku() {
         initPositions();
         System.out.println("Generating ...");
         if (generate()) {
@@ -54,7 +70,9 @@ public class Sudoku extends JComponent {
             System.out.println("Fail.");
         }
         System.out.println("Givens: " + filled());
+        copy(grid, orig);
         swap();
+        repaint();
     }
 
     /**
@@ -63,12 +81,15 @@ public class Sudoku extends JComponent {
      * @param args command line arguments
      */
     public static void main(final String[] args) {
+        Sudoku sudoku = new Sudoku();
         JFrame frame = new JFrame("Sudoku");
-        frame.add(new Sudoku());
+        frame.add(sudoku);
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
         frame.setVisible(true);
+        sudoku.createSudoku();
+        sudoku.requestFocusInWindow();
     }
 
     /**
@@ -81,8 +102,21 @@ public class Sudoku extends JComponent {
         g.setColor(getBackground());
         g.fillRect(0, 0, getWidth(), getHeight());
 
+        /* Draw marked spaces. */
+        g.setColor(Color.LIGHT_GRAY);
+        for (int y = 0; y < 9; y++) {
+            for (int x = 0; x < 9; x++) {
+                int marked = orig[x][y];
+                if (marked > 0) {
+                    g.fillRect(x * CELL_SIZE + PADDING,
+                               y * CELL_SIZE + PADDING,
+                               CELL_SIZE, CELL_SIZE);
+                }
+            }
+        }
+
         /* Draw the grid. */
-        g.setColor(Color.black);
+        g.setColor(Color.BLACK);
         int max = 9 * CELL_SIZE + PADDING + 1;
         for (int i = 0; i <= 9; i++) {
             int d = i * CELL_SIZE + PADDING;
@@ -97,6 +131,18 @@ public class Sudoku extends JComponent {
             g.drawLine(PADDING + 1, d + 1, max, d + 1);
         }
 
+        /* Draw the selected square. */
+        if (selected != null) {
+            g.setColor(Color.RED);
+            int padding = 3;
+            int thickness = 2;
+            for (int i = padding; i < padding + thickness; i++) {
+                g.drawRect(selected.getX() * CELL_SIZE + PADDING + i,
+                           selected.getY() * CELL_SIZE + PADDING + i,
+                           CELL_SIZE - i * 2, CELL_SIZE - i * 2);
+            }
+        }
+
         /* Set the font. */
         g.setFont(g.getFont().deriveFont(FONT_SIZE));
         Graphics2D g2d = (Graphics2D) g;
@@ -104,6 +150,7 @@ public class Sudoku extends JComponent {
                              RenderingHints.VALUE_ANTIALIAS_ON);
 
         /* Draw the numbers. */
+        g.setColor(Color.BLACK);
         FontMetrics fm = g.getFontMetrics();
         for (int y = 0; y < 9; y++) {
             for (int x = 0; x < 9; x++) {
@@ -301,5 +348,74 @@ public class Sudoku extends JComponent {
         byte[][] tmp = grid;
         grid = display;
         display = tmp;
+    }
+
+    /**
+     * Copy one grid to another.
+     */
+    private void copy(byte[][] from, byte[][] to) {
+        for (byte y = 0; y < 9; y++) {
+            for (byte x = 0; x < 9; x++) {
+                to[x][y] = from[x][y];
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    public void keyTyped(KeyEvent e) {
+        char c = e.getKeyChar();
+        if ((selected != null) && (c >= 49) && (c <= 57)) {
+            /* Number 1..9 */
+            int x = selected.getX();
+            int y = selected.getY();
+            if (orig[x][y] == 0) {
+                display[x][y] = (byte) (c - 48);
+            }
+        }
+        repaint();
+    }
+
+    /** {@inheritDoc} */
+    public void keyPressed(KeyEvent e) {
+        /* Do nothing. */
+    }
+
+    /** {@inheritDoc} */
+    public void keyReleased(KeyEvent e) {
+        /* Do nothing. */
+    }
+
+    /** {@inheritDoc} */
+    public void mouseReleased(final MouseEvent e) {
+        int px = (int) e.getPoint().getX();
+        int py = (int) e.getPoint().getY();
+        int x = (px - PADDING) / CELL_SIZE;
+        int y = (py - PADDING) / CELL_SIZE;
+        if ((x < 9) && (x >= 0) && (y < 9) && (y >= 0)) {
+            selected = new Position((byte) x, (byte) y);
+        } else {
+            selected = null;
+        }
+        repaint();
+    }
+
+    /** {@inheritDoc} */
+    public void mouseClicked(final MouseEvent e) {
+        requestFocusInWindow();
+    }
+
+    /** {@inheritDoc} */
+    public void mouseExited(final MouseEvent e) {
+        /* Do nothing */
+    }
+
+    /** {@inheritDoc} */
+    public void mouseEntered(final MouseEvent e) {
+        /* Do nothing */
+    }
+
+    /** {@inheritDoc} */
+    public void mousePressed(final MouseEvent e) {
+        /* Do nothing */
     }
 }
