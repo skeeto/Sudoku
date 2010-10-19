@@ -76,6 +76,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
         System.out.println("Eliminating ...");
         eliminate();
         System.out.println("Givens: " + filled());
+        System.out.println("Difficulty: " + difficulty());
         copy(grid, orig);
         swap();
         copy(orig, grid);
@@ -388,6 +389,53 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
         }
         unset(pos);
         return count;
+    }
+
+    /**
+     * Determine the grid's difficulty.
+     *
+     * @return the sudoku's difficulty
+     */
+    private int difficulty() {
+        byte[][] work = new byte[9][9];
+        copy(grid, work);
+        return solve(work, 0);
+    }
+
+    /**
+     * Solve a grid.
+     *
+     * @param work the sudoku to solve
+     * @param depth current depth
+     * @return the depth of the call stack at solution
+     */
+    private int solve(final byte[][] work, final int depth) {
+        Position pos = null;
+        for (byte y = 0; pos == null && y < 9; y++) {
+            for (byte x = 0; pos == null && x < 9; x++) {
+                if (work[x][y] == 0) {
+                    pos = new Position(x, y);
+                }
+            }
+        }
+        if (pos == null) {
+            return depth + 1;
+        }
+        int x = pos.getX();
+        int y = pos.getY();
+
+        boolean[] possible = possible(pos);
+        for (byte i = 0; i < 10; i++) {
+            if (possible[i]) {
+                work[x][y] = i;
+                int val = solve(work, depth + 1);
+                if (val > 0) {
+                    return val + 1;
+                }
+            }
+        }
+        work[x][y] = 0;
+        return -1;
     }
 
     /**
