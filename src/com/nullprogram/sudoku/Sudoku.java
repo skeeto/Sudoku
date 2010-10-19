@@ -1,5 +1,9 @@
 package com.nullprogram.sudoku;
 
+import java.util.Stack;
+import java.util.Random;
+import java.util.Collections;
+
 import java.awt.Font;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -23,6 +27,10 @@ public class Sudoku extends JComponent {
     private byte[][] grid;
     private byte[][] display;
 
+    private Random rng;
+    private Position origin = new Position((byte) 0, (byte) 0);
+    private Stack<Position> positions;
+
     public Sudoku() {
         grid = new byte[9][9];
         display = new byte[9][9];
@@ -32,6 +40,22 @@ public class Sudoku extends JComponent {
         setMinimumSize(size);
         setOpaque(true);
         setBackground(Color.white);
+        rng = new Random();
+        positions = new Stack<Position>();
+        for (byte y = 0; y < 9; y++) {
+            for (byte x = 0; x < 9; x++) {
+                positions.push(new Position(x, y));
+            }
+        }
+        Collections.shuffle(positions);
+        System.out.println("Generating ...");
+        if (generate()) {
+            System.out.println("Done.");
+        } else {
+            System.out.println("Fail.");
+        }
+        System.out.println(numSolutions());
+        swap();
     }
 
     public static void main(String[] args) {
@@ -86,12 +110,100 @@ public class Sudoku extends JComponent {
         }
     }
 
+    private byte get(Position p) {
+        return grid[p.getX()][p.getY()];
+    }
+
+    private void set(Position p, byte val) {
+        grid[p.getX()][p.getY()] = val;
+    }
+
+    private void unset(Position p) {
+        grid[p.getX()][p.getY()] = (byte) 0;
+    }
+
+    private boolean generate() {
+        Position pos = positions.pop();
+        boolean[] possible = possible(pos);
+        for (byte i = 0; i < 10; i++) {
+            if (possible[i]) {
+                set(pos, i);
+                int solutions = numSolutions();
+                if (solutions > 1) {
+                    /* Keep filling in. */
+                    if (generate()) {
+                        return true;
+                    }
+                } else if (solutions == 1) {
+                    /* Done, exactly one solution left. */
+                    return true;
+                }
+            }
+        }
+        /* Failed to generate a sudoku from here. */
+        unset(pos);
+        positions.push(pos);
+        return false;
+    }
+
+    private int numSolutions() {
+        Position pos = null;
+        for (byte y = 0; pos == null && y < 9; y++) {
+            for (byte x = 0; pos == null && x < 9; x++) {
+                if (grid[x][y] == 0) {
+                    pos = new Position(x, y);
+                }
+            }
+        }
+        if (pos == null) {
+            /* Board is full i.e. solved. */
+            return 1;
+        }
+
+        boolean[] possible = possible(pos);
+        int count = 0;
+        for (byte i = 0; i < 10; i++) {
+            if (possible[i]) {
+                set(pos, i);
+                count += numSolutions();
+                if (count > 1) {
+                    unset(pos);
+                    return 2;
+                }
+            }
+        }
+        unset(pos);
+        return count;
+    }
+
+    private boolean[] possible(Position pos) {
+        boolean[] possible = new boolean[10];
+        for (int i = 1; i < 10; i++) {
+            possible[i] = true;
+        }
+        for (int x = 0; x < 9; x++) {
+            possible[grid[x][pos.getY()]] = false;
+        }
+        for (int y = 0; y < 9; y++) {
+            possible[grid[pos.getX()][y]] = false;
+        }
+        int xx = (pos.getX() / 3) * 3;
+        int yy = (pos.getY() / 3) * 3;
+        for (int y = 0; y < 3; y++) {
+            for (int x = 0; x < 3; x++) {
+                possible[grid[xx + x][yy + y]] = false;
+            }
+        }
+        possible[0] = false;
+        return possible;
+    }
+
     /**
      * Swap the display and working grids.
      */
     private void swap() {
         byte[][] tmp = grid;
         grid = display;
-        display = grid;
+        display = tmp;
     }
 }
