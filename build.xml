@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<project name="Sudoku" default="jar">
+  <property name="jar" value="${ant.project.name}.jar"/>
+  <property name="src.dir" value="src"/>
+  <property name="build.dir" value="build"/>
+  <property name="doc.dir" value="doc"/>
+  <property name="build.classes.dir" value="${build.dir}/classes"/>
+  <property name="applet.html" value="index.html"/>
+  <taskdef resource="checkstyletask.properties"/>
+
+  <target name="init">
+    <mkdir dir="${build.classes.dir}"/>
+  </target>
+
+  <target name="compile" depends="init"
+	  description="Compile all source files.">
+    <javac srcdir="${src.dir}" destdir="${build.classes.dir}"
+	   optimize="on" debug="on" deprecation="on"
+	   includeantruntime="false">
+      <compilerarg value="-Xlint"/>
+    </javac>
+    <copy todir="${build.classes.dir}">
+      <fileset dir="${src.dir}" excludes="**/*.java"/>
+    </copy>
+  </target>
+
+  <target name="jar" depends="compile"
+	  description="Generate the jarfile distributable.">
+    <jar destfile="${jar}" basedir="${build.classes.dir}">
+      <manifest>
+        <attribute name="Main-Class"
+		   value="com.nullprogram.sudoku.Sudoku"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="run" depends="jar" description="Run the application.">
+    <java jar="${jar}" fork="true">
+      <jvmarg value="-server"/>
+    </java>
+  </target>
+
+  <target name="clean" description="Delete all generated files.">
+    <delete dir="${build.dir}"/>
+    <delete dir="${doc.dir}/javadoc"/>
+    <delete file="${jar}"/>
+  </target>
+
+  <target name="format" description="Run the indenter on all source files.">
+    <apply executable="astyle">
+      <arg value="--mode=java"/>
+      <arg value="--suffix=none"/>
+      <fileset dir="${src.dir}" includes="**/*.java"/>
+    </apply>
+  </target>
+
+  <target name="check">
+    <checkstyle config="doc/sun_checks.xml">
+      <fileset dir="src" includes="**/*.java"/>
+    </checkstyle>
+  </target>
+
+  <target name="javadoc" description="Generate Javadoc HTML.">
+    <javadoc destdir="${doc.dir}/javadoc">
+      <fileset dir="src" includes="**/*.java"/>
+    </javadoc>
+  </target>
+
+  <target name="tags" description="Generate a TAGS file for your editor.">
+    <delete file="TAGS"/>
+    <apply executable="etags">
+      <arg value="-a"/>
+      <fileset dir="${src.dir}" includes="**/*.java"/>
+    </apply>
+  </target>
+
+  <target name="applet" depends="jar" description="Run the applet version.">
+    <exec executable="appletviewer">
+      <arg value="${applet.html}"/>
+    </exec>
+  </target>
+</project>
