@@ -4,7 +4,6 @@ import java.util.Stack;
 import java.util.Random;
 import java.util.Collections;
 
-import java.awt.Font;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -15,6 +14,9 @@ import java.awt.RenderingHints;
 import javax.swing.JFrame;
 import javax.swing.JComponent;
 
+/**
+ * A Sudoku board capable of generating puzzles and interacting.
+ */
 public class Sudoku extends JComponent {
 
     private static final long serialVersionUID = 5546778616302943600L;
@@ -31,6 +33,9 @@ public class Sudoku extends JComponent {
     private Position origin = new Position((byte) 0, (byte) 0);
     private Stack<Position> positions;
 
+    /**
+     * Create a new Sudoku board.
+     */
     public Sudoku() {
         grid = new byte[9][9];
         display = new byte[9][9];
@@ -54,11 +59,15 @@ public class Sudoku extends JComponent {
         } else {
             System.out.println("Fail.");
         }
-        System.out.println(numSolutions());
         swap();
     }
 
-    public static void main(String[] args) {
+    /**
+     * The main function.
+     *
+     * @param args command line arguments
+     */
+    public static void main(final String[] args) {
         JFrame frame = new JFrame("Sudoku");
         frame.add(new Sudoku());
         frame.pack();
@@ -67,7 +76,12 @@ public class Sudoku extends JComponent {
         frame.setVisible(true);
     }
 
-    public void paintComponent(Graphics g) {
+    /**
+     * Draw a Sudoku board on this component.
+     *
+     * @param g the graphics to be painted
+     */
+    public final void paintComponent(final Graphics g) {
         super.paintComponent(g);
         g.setColor(getBackground());
         g.fillRect(0, 0, getWidth(), getHeight());
@@ -110,18 +124,40 @@ public class Sudoku extends JComponent {
         }
     }
 
-    private byte get(Position p) {
+    /**
+     * Get the value at position.
+     *
+     * @param p position
+     * @return the value at the position
+     */
+    private byte get(final Position p) {
         return grid[p.getX()][p.getY()];
     }
 
-    private void set(Position p, byte val) {
+    /**
+     * Get the value at position.
+     *
+     * @param p position
+     * @param val the new value
+     */
+    private void set(final Position p, final byte val) {
         grid[p.getX()][p.getY()] = val;
     }
 
-    private void unset(Position p) {
+    /**
+     * Reset the position to empty.
+     *
+     * @param p position to reset.
+     */
+    private void unset(final Position p) {
         grid[p.getX()][p.getY()] = (byte) 0;
     }
 
+    /**
+     * Generate a new Sudoku puzzle.
+     *
+     * @return true if build was successful
+     */
     private boolean generate() {
         Position pos = positions.pop();
         boolean[] possible = possible(pos);
@@ -146,6 +182,14 @@ public class Sudoku extends JComponent {
         return false;
     }
 
+    /**
+     * Return the number of solutions on the current board.
+     *
+     * We only care if this is 0, 1, or greater than 1, so it will
+     * never actually return higher than 2.
+     *
+     * @return number of solutions
+     */
     private int numSolutions() {
         Position pos = null;
         for (byte y = 0; pos == null && y < 9; y++) {
@@ -176,7 +220,13 @@ public class Sudoku extends JComponent {
         return count;
     }
 
-    private boolean[] possible(Position pos) {
+    /**
+     * Possible values for given position.
+     *
+     * @param pos the position to check
+     * @return list of value possibilities
+     */
+    private boolean[] possible(final Position pos) {
         boolean[] possible = new boolean[10];
         for (int i = 1; i < 10; i++) {
             possible[i] = true;
