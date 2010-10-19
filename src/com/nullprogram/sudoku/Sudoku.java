@@ -64,6 +64,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
      * Create a new Sudoku puzzle.
      */
     public final void createSudoku() {
+        clear(grid);
         initPositions();
         System.out.println("Generating ...");
         if (generate()) {
@@ -170,6 +171,19 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
                     g.drawString(num, xx - fm.stringWidth(num) / 2,
                                  yy + fm.getAscent() / 2);
                 }
+            }
+        }
+    }
+
+    /**
+     * Clear a grid.
+     *
+     * @param array grid to be cleared
+     */
+    private void clear(final byte[][] array) {
+        for (byte y = 0; y < 9; y++) {
+            for (byte x = 0; x < y; x++) {
+                array[x][y] = 0;
             }
         }
     }
