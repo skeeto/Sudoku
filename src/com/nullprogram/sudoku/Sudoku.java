@@ -364,6 +364,36 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
         }
     }
 
+    /**
+     * Move the selected position in a direction.
+     *
+     * @param xDiff change in x-direction
+     * @param yDiff change in y-direction
+     */
+    private void moveSelected(final int xDiff, final int yDiff) {
+        if (selected != null) {
+            byte x = (byte) (selected.getX() + xDiff);
+            byte y = (byte) (selected.getY() + yDiff);
+            setSelected(new Position(x, y));
+        }
+    }
+
+    /**
+     * Set the selected position to this position, if it is valid.
+     *
+     * @param pos position to set
+     * @return true if position was selected
+     */
+    private boolean setSelected(final Position pos) {
+        byte x = pos.getX();
+        byte y = pos.getY();
+        if ((x < 9) && (x >= 0) && (y < 9) && (y >= 0)) {
+            selected = pos;
+            return true;
+        }
+        return false;
+    }
+
     /** {@inheritDoc} */
     public final void keyTyped(final KeyEvent e) {
         char c = e.getKeyChar();
@@ -379,8 +409,19 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     }
 
     /** {@inheritDoc} */
-    public void keyPressed(final KeyEvent e) {
-        /* Do nothing. */
+    public final void keyPressed(final KeyEvent e) {
+        if (e.isActionKey()) {
+            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                moveSelected(-1, 0);
+            } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                moveSelected(1, 0);
+            } else if (e.getKeyCode() == KeyEvent.VK_UP) {
+                moveSelected(0, -1);
+            } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                moveSelected(0, 1);
+            }
+        }
+        repaint();
     }
 
     /** {@inheritDoc} */
@@ -394,9 +435,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
         int py = (int) e.getPoint().getY();
         int x = (px - PADDING) / CELL_SIZE;
         int y = (py - PADDING) / CELL_SIZE;
-        if ((x < 9) && (x >= 0) && (y < 9) && (y >= 0)) {
-            selected = new Position((byte) x, (byte) y);
-        } else {
+        if (!setSelected(new Position((byte) x, (byte) y))) {
             selected = null;
         }
         repaint();
