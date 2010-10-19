@@ -229,7 +229,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     }
 
     /**
-     * Get the value at position.
+     * Set the value at position.
      *
      * @param p position
      * @param val the new value
@@ -245,6 +245,22 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
      */
     private void unset(final Position p) {
         grid[p.getX()][p.getY()] = (byte) 0;
+    }
+
+    /**
+     * User wishes to set value at position.
+     *
+     * @param p position to set
+     * @param val value to set it to
+     */
+    private void userSet(final Position p, final byte val) {
+        int x = p.getX();
+        int y = p.getY();
+        if (orig[x][y] == 0) {
+            display[x][y] = val;
+            grid[x][y] = val;
+        }
+        /* Check validity and mark it here. */
     }
 
     /**
@@ -400,13 +416,11 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     /** {@inheritDoc} */
     public final void keyTyped(final KeyEvent e) {
         char c = e.getKeyChar();
-        if ((selected != null) && (c >= 49) && (c <= 57)) {
+        if ((selected != null) && (c >= 48) && (c <= 57)) {
             /* Number 1..9 */
             int x = selected.getX();
             int y = selected.getY();
-            if (orig[x][y] == 0) {
-                display[x][y] = (byte) (c - 48);
-            }
+            userSet(selected, (byte) (c - 48));
         }
         repaint();
     }
