@@ -404,6 +404,23 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     }
 
     /**
+     * The number of possible values for a given position.
+     *
+     * @param pos the position to check
+     * @return number of possible values
+     */
+    private int numPossible(final Position pos) {
+        boolean[] possible = possible(pos);
+        int count = 0;
+        for (int i = 1; i < 10; i++) {
+            if (possible[i]) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
      * Swap the display and working grids.
      *
      * This is so the display is always working with a consistent grid.
