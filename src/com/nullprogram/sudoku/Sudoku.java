@@ -72,6 +72,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
         System.out.println("Givens: " + filled());
         copy(grid, orig);
         swap();
+        copy(orig, grid);
         repaint();
     }
 
@@ -343,6 +344,8 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
 
     /**
      * Swap the display and working grids.
+     *
+     * This is so the display is always working with a consistent grid.
      */
     private void swap() {
         byte[][] tmp = grid;
