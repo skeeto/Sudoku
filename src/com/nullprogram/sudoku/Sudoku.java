@@ -196,25 +196,18 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
      * Create a symmetrical order the positions.
      */
     private void initPositions() {
-        Stack<Position> tmp = new Stack<Position>();
         positions = new Stack<Position>();
         used = new Stack<Position>();
         for (byte y = 0; y < 9; y++) {
             for (byte x = 0; x < y; x++) {
                 Position pos = new Position(x, y);
-                tmp.push(pos);
+                positions.push(pos);
             }
         }
         for (byte i = 0; i < 4; i++) {
-            tmp.push(new Position(i, i));
+            positions.push(new Position(i, i));
         }
-        Collections.shuffle(tmp);
-        while (!tmp.empty()) {
-            Position pos = tmp.pop();
-            Position mirror = mirror(pos);
-            positions.push(pos);
-            positions.push(mirror);
-        }
+        Collections.shuffle(positions);
     }
 
     /**
@@ -313,27 +306,35 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
      * @return true if build was successful
      */
     private boolean generate() {
-        Position pos = positions.pop();
-        used.push(pos);
-        boolean[] possible = possible(pos);
+        Position pos1 = positions.pop();
+        Position pos2 = mirror(pos1);
+        used.push(pos1);
+        boolean[] possible1 = possible(pos1);
         for (byte i = 0; i < 10; i++) {
-            if (possible[i]) {
-                set(pos, i);
-                int solutions = numSolutions();
-                if (solutions > 1) {
-                    /* Keep filling in. */
-                    if (generate()) {
-                        return true;
+            if (possible1[i]) {
+                set(pos1, i);
+                for (byte j = 0; j < 10; j++) {
+                    boolean[] possible2 = possible(pos2);
+                    if (possible2[j]) {
+                        set(pos2, j);
+                        int solutions = numSolutions();
+                        if (solutions > 1) {
+                            /* Keep filling in. */
+                            if (generate()) {
+                                return true;
+                            }
+                        } else if (solutions == 1) {
+                            /* Done, exactly one solution left. */
+                            return true;
+                        }
                     }
-                } else if (solutions == 1) {
-                    /* Done, exactly one solution left. */
-                    return true;
                 }
             }
         }
         /* Failed to generate a sudoku from here. */
-        unset(pos);
-        positions.push(pos);
+        unset(pos1);
+        unset(pos2);
+        positions.push(pos1);
         used.pop();
         return false;
     }
@@ -344,11 +345,15 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     private void eliminate() {
         Collections.shuffle(used);
         while (!used.empty()) {
-            Position pos = used.pop();
-            byte val = get(pos);
-            unset(pos);
+            Position pos1 = used.pop();
+            Position pos2 = mirror(pos1);
+            byte val1 = get(pos1);
+            byte val2 = get(pos2);
+            unset(pos1);
+            unset(pos2);
             if (numSolutions() > 1) {
-                set(pos, val);
+                set(pos1, val1);
+                set(pos2, val2);
             }
         }
     }
