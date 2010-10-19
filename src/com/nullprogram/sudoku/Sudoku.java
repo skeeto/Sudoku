@@ -41,6 +41,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     private Stack<Position> positions;
     private Stack<Position> used;
     private Position selected;
+    private int givensGoal = 32;
     private long initTime;
 
     /**
@@ -67,7 +68,9 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
      * Create a new Sudoku puzzle.
      */
     public final void createSudoku() {
-        while (true) {
+        boolean failed;
+        do {
+            failed = false;
             try {
                 clear(grid);
                 initPositions();
@@ -76,13 +79,12 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
                 System.out.println("result = " + generate());
                 System.out.println("Eliminating ...");
                 eliminate();
-                break;
             } catch (TimeoutException e) {
                 System.out.println("Timeout.");
+                failed = true;
             }
-        }
-        System.out.println("Givens: " + filled());
-        System.out.println("Difficulty: " + difficulty());
+        } while (failed || (filled() != givensGoal));
+        System.out.println("Givens: " + filled() + " (" + givensGoal + ")");
         copy(grid, orig);
         swap();
         copy(orig, grid);
@@ -350,7 +352,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
      */
     private void eliminate() throws TimeoutException {
         Collections.shuffle(used);
-        while (!used.empty()) {
+        while (!used.empty() && filled() > givensGoal) {
             Position pos1 = used.pop();
             Position pos2 = mirror(pos1);
             byte val1 = get(pos1);
