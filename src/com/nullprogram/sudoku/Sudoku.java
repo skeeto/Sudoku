@@ -38,6 +38,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     private Random rng;
     private Position origin = new Position((byte) 0, (byte) 0);
     private Stack<Position> positions;
+    private Stack<Position> used;
     private Position selected;
 
     /**
@@ -72,6 +73,8 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
         } else {
             System.out.println("Fail.");
         }
+        System.out.println("Eliminating ...");
+        eliminate();
         System.out.println("Givens: " + filled());
         copy(grid, orig);
         swap();
@@ -194,6 +197,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     private void initPositions() {
         Stack<Position> tmp = new Stack<Position>();
         positions = new Stack<Position>();
+        used = new Stack<Position>();
         for (byte y = 0; y < 9; y++) {
             for (byte x = 0; x < y; x++) {
                 Position pos = new Position(x, y);
@@ -309,6 +313,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
      */
     private boolean generate() {
         Position pos = positions.pop();
+        used.push(pos);
         boolean[] possible = possible(pos);
         for (byte i = 0; i < 10; i++) {
             if (possible[i]) {
@@ -328,7 +333,23 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
         /* Failed to generate a sudoku from here. */
         unset(pos);
         positions.push(pos);
+        used.pop();
         return false;
+    }
+
+    /**
+     * Try to eliminate some hints.
+     */
+    private void eliminate() {
+        Collections.shuffle(used);
+        while (!used.empty()) {
+            Position pos = used.pop();
+            byte val = get(pos);
+            unset(pos);
+            if (numSolutions() > 1) {
+                set(pos, val);
+            }
+        }
     }
 
     /**
