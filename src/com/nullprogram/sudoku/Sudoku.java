@@ -28,7 +28,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     private static final float FONT_SIZE = 24f;
     private static final int CELL_SIZE = 40;
     private static final int PADDING = 10;
-    private static final int TIMEOUT = 1000;
+    private static final int TIMEOUT = 1500;
 
     /* Work grid and the displayed grid. */
     private byte[][] grid;
