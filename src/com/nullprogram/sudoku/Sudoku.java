@@ -186,7 +186,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
      */
     private void clear(final byte[][] array) {
         for (byte y = 0; y < 9; y++) {
-            for (byte x = 0; x < y; x++) {
+            for (byte x = 0; x < 9; x++) {
                 array[x][y] = 0;
             }
         }
