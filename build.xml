@@ -57,6 +57,9 @@
   <target name="check">
     <checkstyle config="doc/sun_checks.xml">
       <fileset dir="src" includes="**/*.java"/>
+      <classpath>
+	<path location="${build.classes.dir}"/>
+      </classpath>
     </checkstyle>
   </target>
 

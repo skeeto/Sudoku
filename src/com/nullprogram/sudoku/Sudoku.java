@@ -312,6 +312,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
      * Generate a new Sudoku puzzle.
      *
      * @return true if build was successful
+     * @throws TimeoutException if generation took too long
      */
     private boolean generate() throws TimeoutException {
         Position pos1 = positions.pop();
@@ -349,6 +350,8 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
 
     /**
      * Try to eliminate some hints.
+     *
+     * @throws TimeoutException if generation took too long
      */
     private void eliminate() throws TimeoutException {
         Collections.shuffle(used);
@@ -373,6 +376,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
      * never actually return higher than 2.
      *
      * @return number of solutions
+     * @throws TimeoutException if generation took too long
      */
     private int numSolutions() throws TimeoutException {
         if ((rng.nextInt(200) == 1)
