@@ -404,7 +404,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     private int difficulty() {
         byte[][] work = new byte[9][9];
         copy(grid, work);
-        return solve(work, 0);
+        return solve(work, 0) - (9 * 9 - filled());
     }
 
     /**
