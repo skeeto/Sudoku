@@ -36,4 +36,15 @@ public class Position {
     public final byte getY() {
         return y;
     }
+
+    /** {@inheritDoc} */
+    public final boolean equals(Object o) {
+        if (o instanceof Position) {
+            Position that = (Position) o;
+            if ((this.x == that.x) && (this.y == that.y)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
