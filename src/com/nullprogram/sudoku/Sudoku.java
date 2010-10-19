@@ -46,19 +46,14 @@ public class Sudoku extends JComponent {
         setOpaque(true);
         setBackground(Color.white);
         rng = new Random();
-        positions = new Stack<Position>();
-        for (byte y = 0; y < 9; y++) {
-            for (byte x = 0; x < 9; x++) {
-                positions.push(new Position(x, y));
-            }
-        }
-        Collections.shuffle(positions);
+        initPositions();
         System.out.println("Generating ...");
         if (generate()) {
             System.out.println("Done.");
         } else {
             System.out.println("Fail.");
         }
+        System.out.println("Givens: " + filled());
         swap();
     }
 
@@ -122,6 +117,57 @@ public class Sudoku extends JComponent {
                 }
             }
         }
+    }
+
+    /**
+     * Create a symmetrical order the positions.
+     */
+    private void initPositions() {
+        Stack<Position> tmp = new Stack<Position>();
+        positions = new Stack<Position>();
+        for (byte y = 0; y < 9; y++) {
+            for (byte x = 0; x < y; x++) {
+                Position pos = new Position(x, y);
+                tmp.push(pos);
+            }
+        }
+        for (byte i = 0; i < 4; i++) {
+            tmp.push(new Position(i, i));
+        }
+        Collections.shuffle(tmp);
+        while (!tmp.empty()) {
+            Position pos = tmp.pop();
+            Position mirror = mirror(pos);
+            positions.push(pos);
+            positions.push(mirror);
+        }
+    }
+
+    /**
+     * Return mirror of position.
+     *
+     * @param pos position to mirror
+     * @return mirrored position
+     */
+    private Position mirror(Position pos) {
+        return new Position((byte) (8 - pos.getX()), (byte) (8 - pos.getY()));
+    }
+
+    /**
+     * Return the number of filled positions.
+     *
+     * @return number of filled positions
+     */
+    private int filled() {
+        int count = 0;
+        for (int y = 0; y < 9; y++) {
+            for (int x = 0; x < 9; x++) {
+                if (grid[x][y] > 0) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     /**
