@@ -47,4 +47,9 @@ public class Position {
         }
         return false;
     }
+
+    /** {@inheritDoc} */
+    public final int hashCode() {
+        return x ^ (y << 8);
+    }
 }
