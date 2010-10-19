@@ -13,7 +13,7 @@ public class SudokuApplet extends JApplet {
     public final void init() {
         Sudoku sudoku = new Sudoku();
         add(sudoku);
-        sudoku.createSudoku();
+        sudoku.createSudoku(Sudoku.EASY);
         sudoku.requestFocusInWindow();
     }
 }

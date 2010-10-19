@@ -30,6 +30,15 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     private static final int PADDING = 10;
     private static final int TIMEOUT = 1500;
 
+    /** The easiest difficulty (32 givens). */
+    public static final int EASY = 32;
+
+    /** A medium difficulty (28 givens). */
+    public static final int MEDIUM = 28;
+
+    /** A hard difficulty (24 givens). */
+    public static final int HARD = 24;
+
     /* Work grid and the displayed grid. */
     private byte[][] grid;
     private byte[][] display;
@@ -41,7 +50,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     private Stack<Position> positions;
     private Stack<Position> used;
     private Position selected;
-    private int givensGoal = 32;
+    private int givensGoal;
     private long initTime;
 
     /**
@@ -66,8 +75,11 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
 
     /**
      * Create a new Sudoku puzzle.
+     *
+     * @param difficulty the sudoku's difficulty
      */
-    public final void createSudoku() {
+    public final void createSudoku(final int difficulty) {
+        givensGoal = difficulty;
         boolean failed;
         do {
             failed = false;
@@ -105,7 +117,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
         frame.setVisible(true);
-        sudoku.createSudoku();
+        sudoku.createSudoku(Sudoku.EASY);
         sudoku.requestFocusInWindow();
     }
 
