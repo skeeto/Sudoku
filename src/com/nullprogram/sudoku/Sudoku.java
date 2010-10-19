@@ -33,6 +33,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     private byte[][] grid;
     private byte[][] display;
     private byte[][] orig;
+    private boolean[][] valid;
 
     private Random rng;
     private Position origin = new Position((byte) 0, (byte) 0);
@@ -46,6 +47,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
         grid = new byte[9][9];
         display = new byte[9][9];
         orig = new byte[9][9];
+        valid = new boolean[9][9];
         int side = CELL_SIZE * 9 + PADDING * 2;
         Dimension size = new Dimension(side, side);
         setPreferredSize(size);
@@ -73,6 +75,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
         copy(grid, orig);
         swap();
         copy(orig, grid);
+        checkValid();
         repaint();
     }
 
@@ -104,15 +107,19 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
         g.fillRect(0, 0, getWidth(), getHeight());
 
         /* Draw marked spaces. */
-        g.setColor(Color.LIGHT_GRAY);
         for (int y = 0; y < 9; y++) {
             for (int x = 0; x < 9; x++) {
                 int marked = orig[x][y];
                 if (marked > 0) {
-                    g.fillRect(x * CELL_SIZE + PADDING,
-                               y * CELL_SIZE + PADDING,
-                               CELL_SIZE, CELL_SIZE);
+                    g.setColor(Color.LIGHT_GRAY);
+                } else if (!valid[x][y]) {
+                    g.setColor(Color.YELLOW);
+                } else {
+                    g.setColor(getBackground());
                 }
+                g.fillRect(x * CELL_SIZE + PADDING,
+                           y * CELL_SIZE + PADDING,
+                           CELL_SIZE, CELL_SIZE);
             }
         }
 
@@ -260,7 +267,25 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
             display[x][y] = val;
             grid[x][y] = val;
         }
-        /* Check validity and mark it here. */
+        checkValid();
+    }
+
+    /**
+     * Check the validity of the current board.
+     */
+    private void checkValid() {
+        for (byte y = 0; y < 9; y++) {
+            for (byte x = 0; x < 9; x++) {
+                Position pos = new Position(x, y);
+                byte val = get(pos);
+                if (val > 0) {
+                    boolean[] possible = possible(pos);
+                    valid[x][y] = possible[val];
+                } else {
+                    valid[x][y] = true;
+                }
+            }
+        }
     }
 
     /**
@@ -342,16 +367,22 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
             possible[i] = true;
         }
         for (int x = 0; x < 9; x++) {
-            possible[grid[x][pos.getY()]] = false;
+            if (x != pos.getX()) {
+                possible[grid[x][pos.getY()]] = false;
+            }
         }
         for (int y = 0; y < 9; y++) {
-            possible[grid[pos.getX()][y]] = false;
+            if (y != pos.getY()) {
+                possible[grid[pos.getX()][y]] = false;
+            }
         }
         int xx = (pos.getX() / 3) * 3;
         int yy = (pos.getY() / 3) * 3;
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 3; x++) {
-                possible[grid[xx + x][yy + y]] = false;
+                if ((xx + x != pos.getX()) && (yy + y != pos.getY())) {
+                    possible[grid[xx + x][yy + y]] = false;
+                }
             }
         }
         possible[0] = false;
