@@ -38,7 +38,7 @@ public class Position {
     }
 
     /** {@inheritDoc} */
-    public final boolean equals(Object o) {
+    public final boolean equals(final Object o) {
         if (o instanceof Position) {
             Position that = (Position) o;
             if ((this.x == that.x) && (this.y == that.y)) {

@@ -149,7 +149,7 @@ public class Sudoku extends JComponent {
      * @param pos position to mirror
      * @return mirrored position
      */
-    private Position mirror(Position pos) {
+    private Position mirror(final Position pos) {
         return new Position((byte) (8 - pos.getX()), (byte) (8 - pos.getY()));
     }
 
