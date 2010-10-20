@@ -14,7 +14,10 @@ import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
+import javax.swing.Timer;
 import javax.swing.JFrame;
 import javax.swing.JComponent;
 
@@ -51,9 +54,14 @@ public class Sudoku extends JComponent
     private Stack<Position> positions;
     private Stack<Position> used;
     private Position selected;
+
+    /* Generation variables. */
     private int givensGoal;
     private long initTime;
     private volatile boolean generating = false;
+    private Timer timer;
+    private int animateState;
+    private int animateStateMax = 32;
 
     /**
      * Create a new Sudoku board.
@@ -83,6 +91,18 @@ public class Sudoku extends JComponent
      */
     public final void createSudoku(final int difficulty) {
         if (!generating) {
+            animateState = 0;
+            ActionListener listener = new ActionListener() {
+                    public void actionPerformed(final ActionEvent evt) {
+                        animateState++;
+                        if (animateState >= animateStateMax) {
+                            animateState = 0;
+                        }
+                        repaint();
+                    }
+                };
+            timer = new Timer(50, listener);
+            timer.start();
             generating = true;
             givensGoal = difficulty;
             clear(display);
@@ -118,6 +138,7 @@ public class Sudoku extends JComponent
         copy(orig, grid);
         checkValid();
         generating = false;
+        timer.stop();
         repaint();
     }
 
@@ -154,6 +175,17 @@ public class Sudoku extends JComponent
             paintSelector(g);
             paintNumbers(g);
         } else {
+            double angle = animateState * Math.PI * 2f / animateStateMax;
+            int x = (int) (Math.cos(angle) * 4.5) + 4;
+            int y = (int) (Math.sin(angle) * 4.5) + 4;
+            System.out.println(x + ", " + y);
+            g.setColor(Color.GREEN);
+            g.fillRect(x * CELL_SIZE + PADDING,
+                       y * CELL_SIZE + PADDING,
+                       CELL_SIZE, CELL_SIZE);
+            g.fillRect((8 - x) * CELL_SIZE + PADDING,
+                       (8 - y) * CELL_SIZE + PADDING,
+                       CELL_SIZE, CELL_SIZE);
             paintGrid(g);
         }
     }
