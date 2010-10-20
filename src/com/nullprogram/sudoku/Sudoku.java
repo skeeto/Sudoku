@@ -54,6 +54,7 @@ public class Sudoku extends JComponent
     private Stack<Position> positions;
     private Stack<Position> used;
     private Position selected;
+    private boolean playing = false;
 
     /* Generation variables. */
     private int givensGoal;
@@ -62,6 +63,7 @@ public class Sudoku extends JComponent
     private Timer timer;
     private int animateState;
     private int animateStateMax = 32;
+    private int fade;
 
     /**
      * Create a new Sudoku board.
@@ -90,7 +92,9 @@ public class Sudoku extends JComponent
      * @param difficulty the sudoku's difficulty
      */
     public final void createSudoku(final int difficulty) {
+        playing = false;
         givensGoal = difficulty;
+        setBackground(Color.WHITE);
         if (!generating) {
             animateState = 0;
             ActionListener listener = new ActionListener() {
@@ -138,6 +142,7 @@ public class Sudoku extends JComponent
         copy(orig, grid);
         checkValid();
         generating = false;
+        playing = true;
         timer.stop();
         repaint();
     }
@@ -253,6 +258,9 @@ public class Sudoku extends JComponent
      * @param g the graphics to paint
      */
     private void paintSelector(final Graphics g) {
+        if (!playing) {
+            return;
+        }
         if (selected != null) {
             g.setColor(Color.RED);
             int padding = 3;
@@ -388,6 +396,9 @@ public class Sudoku extends JComponent
      * @param val value to set it to
      */
     private void userSet(final Position p, final byte val) {
+        if (!playing) {
+            return;
+        }
         int x = p.getX();
         int y = p.getY();
         if (orig[x][y] == 0) {
@@ -395,6 +406,7 @@ public class Sudoku extends JComponent
             grid[x][y] = val;
         }
         checkValid();
+        checkComplete();
     }
 
     /**
@@ -413,6 +425,41 @@ public class Sudoku extends JComponent
                 }
             }
         }
+    }
+
+    /**
+     * Check if the sudoku is complete.
+     */
+    private void checkComplete() {
+        for (byte y = 0; y < 9; y++) {
+            for (byte x = 0; x < 9; x++) {
+                if (!valid[x][y] || (display[x][y] == 0)) {
+                    return;
+                }
+            }
+        }
+        /* It is complete. */
+        playing = false;
+        fadeOut();
+    }
+
+    /**
+     * Start fading the screen.
+     */
+    private void fadeOut() {
+        fade = 0xFF;
+        ActionListener listener = new ActionListener() {
+                public void actionPerformed(final ActionEvent e) {
+                    fade -= 10;
+                    if (fade < 192) {
+                        fade = 192;
+                        ((Timer) e.getSource()).stop();
+                    }
+                    setBackground(new Color(fade, fade, fade));
+                    repaint();
+                }
+            };
+        (new Timer(50, listener)).start();
     }
 
     /**
