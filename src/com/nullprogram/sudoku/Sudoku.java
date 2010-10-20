@@ -416,6 +416,20 @@ public class Sudoku extends JComponent
     }
 
     /**
+     * Auto-solve the currently selected position.
+     */
+    public final void hint() {
+        if (selected != null) {
+            byte[][] work = new byte[9][9];
+            copy(display, work);
+            System.out.println("solve in");
+            solve(work, 0);
+            System.out.println("solve out");
+            userSet(selected, work[selected.getX()][selected.getY()]);
+        }
+    }
+
+    /**
      * Generate a new Sudoku puzzle.
      *
      * @return true if build was successful
