@@ -94,14 +94,14 @@ public class Sudoku extends JComponent
         if (!generating) {
             animateState = 0;
             ActionListener listener = new ActionListener() {
-                    public void actionPerformed(final ActionEvent evt) {
-                        animateState++;
-                        if (animateState >= animateStateMax) {
-                            animateState = 0;
-                        }
-                        repaint();
+                public void actionPerformed(final ActionEvent evt) {
+                    animateState++;
+                    if (animateState >= animateStateMax) {
+                        animateState = 0;
                     }
-                };
+                    repaint();
+                }
+            };
             timer = new Timer(50, listener);
             timer.start();
             generating = true;
