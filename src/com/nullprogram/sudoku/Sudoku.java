@@ -737,10 +737,11 @@ public class Sudoku extends JComponent
 
     /** {@inheritDoc} */
     public final void mouseReleased(final MouseEvent e) {
-        int px = (int) e.getPoint().getX();
-        int py = (int) e.getPoint().getY();
-        int x = (px - PADDING) / CELL_SIZE;
-        int y = (py - PADDING) / CELL_SIZE;
+        double px = e.getPoint().getX();
+        double py = e.getPoint().getY();
+        int x = (int) Math.floor((px - PADDING) / CELL_SIZE);
+        int y = (int) Math.floor((py - PADDING) / CELL_SIZE);
+        System.out.println((px - PADDING) + ", " + y);
         if (!setSelected(new Position((byte) x, (byte) y))) {
             selected = null;
         }
