@@ -20,6 +20,5 @@ public class SudokuApplet extends JApplet {
     /** {@inheritDoc} */
     public final void start() {
         sudoku.createSudoku(Sudoku.EASY);
-        sudoku.requestFocusInWindow();
     }
 }

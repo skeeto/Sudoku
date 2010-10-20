@@ -625,6 +625,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     /** {@inheritDoc} */
     public final void mouseClicked(final MouseEvent e) {
         requestFocusInWindow();
+        requestFocus();
     }
 
     /** {@inheritDoc} */
