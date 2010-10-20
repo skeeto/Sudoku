@@ -583,10 +583,12 @@ public class Sudoku extends JComponent
     /**
      * Possible values for given position.
      *
+     * @param work the sudoku board to use
      * @param pos the position to check
      * @return list of value possibilities
      */
-    private static boolean[] possible(final byte[][] work, final Position pos) {
+    private static boolean[] possible(final byte[][] work,
+                                      final Position pos) {
         boolean[] possible = new boolean[10];
         for (int i = 1; i < 10; i++) {
             possible[i] = true;
