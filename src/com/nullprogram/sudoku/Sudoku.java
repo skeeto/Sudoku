@@ -702,7 +702,6 @@ public class Sudoku extends JComponent
             createSudoku(HARD);
         } else if (c == 'h') {
             hint();
-            System.out.println("hint");
         }
         repaint();
     }
