@@ -406,7 +406,7 @@ public class Sudoku extends JComponent
                 Position pos = new Position(x, y);
                 byte val = get(pos);
                 if (val > 0) {
-                    boolean[] possible = possible(pos);
+                    boolean[] possible = possible(grid, pos);
                     valid[x][y] = possible[val];
                 } else {
                     valid[x][y] = true;
@@ -439,12 +439,12 @@ public class Sudoku extends JComponent
         Position pos1 = positions.pop();
         Position pos2 = mirror(pos1);
         used.push(pos1);
-        boolean[] possible1 = possible(pos1);
+        boolean[] possible1 = possible(grid, pos1);
         for (byte i = 0; i < 10; i++) {
             if (possible1[i]) {
                 set(pos1, i);
                 for (byte j = 0; j < 10; j++) {
-                    boolean[] possible2 = possible(pos2);
+                    boolean[] possible2 = possible(grid, pos2);
                     if (possible2[j]) {
                         set(pos2, j);
                         int solutions = numSolutions();
@@ -517,7 +517,7 @@ public class Sudoku extends JComponent
             return 1;
         }
 
-        boolean[] possible = possible(pos);
+        boolean[] possible = possible(grid, pos);
         int count = 0;
         for (byte i = 0; i < 10; i++) {
             if (possible[i]) {
@@ -566,7 +566,7 @@ public class Sudoku extends JComponent
         int x = pos.getX();
         int y = pos.getY();
 
-        boolean[] possible = possible(pos);
+        boolean[] possible = possible(work, pos);
         for (byte i = 0; i < 10; i++) {
             if (possible[i]) {
                 work[x][y] = i;
@@ -586,19 +586,19 @@ public class Sudoku extends JComponent
      * @param pos the position to check
      * @return list of value possibilities
      */
-    private boolean[] possible(final Position pos) {
+    private static boolean[] possible(final byte[][] work, final Position pos) {
         boolean[] possible = new boolean[10];
         for (int i = 1; i < 10; i++) {
             possible[i] = true;
         }
         for (int x = 0; x < 9; x++) {
             if (x != pos.getX()) {
-                possible[grid[x][pos.getY()]] = false;
+                possible[work[x][pos.getY()]] = false;
             }
         }
         for (int y = 0; y < 9; y++) {
             if (y != pos.getY()) {
-                possible[grid[pos.getX()][y]] = false;
+                possible[work[pos.getX()][y]] = false;
             }
         }
         int xx = (pos.getX() / 3) * 3;
@@ -606,7 +606,7 @@ public class Sudoku extends JComponent
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 3; x++) {
                 if ((xx + x != pos.getX()) && (yy + y != pos.getY())) {
-                    possible[grid[xx + x][yy + y]] = false;
+                    possible[work[xx + x][yy + y]] = false;
                 }
             }
         }
@@ -621,7 +621,7 @@ public class Sudoku extends JComponent
      * @return number of possible values
      */
     private int numPossible(final Position pos) {
-        boolean[] possible = possible(pos);
+        boolean[] possible = possible(grid, pos);
         int count = 0;
         for (int i = 1; i < 10; i++) {
             if (possible[i]) {
