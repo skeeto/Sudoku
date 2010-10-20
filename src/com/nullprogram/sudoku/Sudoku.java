@@ -786,7 +786,6 @@ public class Sudoku extends JComponent
         double py = e.getPoint().getY();
         int x = (int) Math.floor((px - PADDING) / CELL_SIZE);
         int y = (int) Math.floor((py - PADDING) / CELL_SIZE);
-        System.out.println((px - PADDING) + ", " + y);
         if (!setSelected(new Position((byte) x, (byte) y))) {
             selected = null;
         }
