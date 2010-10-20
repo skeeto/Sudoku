@@ -21,7 +21,8 @@ import javax.swing.JComponent;
 /**
  * A Sudoku board capable of generating puzzles and interacting.
  */
-public class Sudoku extends JComponent implements KeyListener, MouseListener {
+public class Sudoku extends JComponent
+    implements KeyListener, MouseListener, Runnable {
 
     private static final long serialVersionUID = 5546778616302943600L;
 
@@ -52,6 +53,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     private Position selected;
     private int givensGoal;
     private long initTime;
+    private volatile boolean generating = false;
 
     /**
      * Create a new Sudoku board.
@@ -61,6 +63,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
         display = new byte[9][9];
         orig = new byte[9][9];
         valid = new boolean[9][9];
+        checkValid();
         int side = CELL_SIZE * 9 + PADDING * 2;
         Dimension size = new Dimension(side, side);
         setPreferredSize(size);
@@ -79,7 +82,20 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
      * @param difficulty the sudoku's difficulty
      */
     public final void createSudoku(final int difficulty) {
-        givensGoal = difficulty;
+        if (!generating) {
+            generating = true;
+            givensGoal = difficulty;
+            clear(display);
+            clear(orig);
+            clear(grid);
+            checkValid();
+            (new Thread(this)).start();
+            repaint();
+        }
+    }
+
+    /** {@inheritDoc} */
+    public void run() {
         boolean failed;
         do {
             failed = false;
@@ -101,6 +117,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
         swap();
         copy(orig, grid);
         checkValid();
+        generating = false;
         repaint();
     }
 
@@ -580,7 +597,7 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
     /** {@inheritDoc} */
     public final void keyTyped(final KeyEvent e) {
         char c = e.getKeyChar();
-        if ((selected != null) && (c >= 48) && (c <= 57)) {
+        if (!generating && (selected != null) && (c >= 48) && (c <= 57)) {
             /* Number 1..9 */
             int x = selected.getX();
             int y = selected.getY();
