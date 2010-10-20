@@ -9,10 +9,16 @@ public class SudokuApplet extends JApplet {
 
     private static final long serialVersionUID = 2598809732909851801L;
 
+    private Sudoku sudoku;
+
     /** {@inheritDoc} */
     public final void init() {
-        Sudoku sudoku = new Sudoku();
+        sudoku = new Sudoku();
         add(sudoku);
+    }
+
+    /** {@inheritDoc} */
+    public final void start() {
         sudoku.createSudoku(Sudoku.EASY);
         sudoku.requestFocusInWindow();
     }
