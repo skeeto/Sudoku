@@ -90,6 +90,7 @@ public class Sudoku extends JComponent
      * @param difficulty the sudoku's difficulty
      */
     public final void createSudoku(final int difficulty) {
+        givensGoal = difficulty;
         if (!generating) {
             animateState = 0;
             ActionListener listener = new ActionListener() {
@@ -104,7 +105,6 @@ public class Sudoku extends JComponent
             timer = new Timer(50, listener);
             timer.start();
             generating = true;
-            givensGoal = difficulty;
             clear(display);
             clear(orig);
             clear(grid);
