@@ -585,6 +585,12 @@ public class Sudoku extends JComponent implements KeyListener, MouseListener {
             int x = selected.getX();
             int y = selected.getY();
             userSet(selected, (byte) (c - 48));
+        } else if (c == 'E') {
+            createSudoku(EASY);
+        } else if (c == 'M') {
+            createSudoku(MEDIUM);
+        } else if (c == 'H') {
+            createSudoku(HARD);
         }
         repaint();
     }
