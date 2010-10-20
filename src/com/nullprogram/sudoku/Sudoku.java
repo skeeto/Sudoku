@@ -115,7 +115,7 @@ public class Sudoku extends JComponent
     }
 
     /** {@inheritDoc} */
-    public void run() {
+    public final void run() {
         boolean failed;
         do {
             failed = false;
@@ -195,7 +195,7 @@ public class Sudoku extends JComponent
      *
      * @param g the graphics to paint
      */
-    private void paintMarks(Graphics g) {
+    private void paintMarks(final Graphics g) {
         for (int y = 0; y < 9; y++) {
             for (int x = 0; x < 9; x++) {
                 int marked = orig[x][y];
@@ -218,7 +218,7 @@ public class Sudoku extends JComponent
      *
      * @param g the graphics to paint
      */
-    private void paintGrid(Graphics g) {
+    private void paintGrid(final Graphics g) {
         g.setColor(Color.BLACK);
         int max = 9 * CELL_SIZE + PADDING + 1;
         for (int i = 0; i <= 9; i++) {
@@ -240,7 +240,7 @@ public class Sudoku extends JComponent
      *
      * @param g the graphics to paint
      */
-    private void paintSelector(Graphics g) {
+    private void paintSelector(final Graphics g) {
         if (selected != null) {
             g.setColor(Color.RED);
             int padding = 3;
@@ -258,7 +258,7 @@ public class Sudoku extends JComponent
      *
      * @param g the graphics to paint
      */
-    private void paintNumbers(Graphics g) {
+    private void paintNumbers(final Graphics g) {
         /* Set the font. */
         g.setFont(g.getFont().deriveFont(FONT_SIZE));
         Graphics2D g2d = (Graphics2D) g;
