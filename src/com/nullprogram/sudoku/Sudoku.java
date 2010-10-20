@@ -450,7 +450,7 @@ public class Sudoku extends JComponent
         fade = 0xFF;
         ActionListener listener = new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
-                    fade -= 10;
+                    fade -= 2;
                     if (fade < 192) {
                         fade = 192;
                         ((Timer) e.getSource()).stop();
