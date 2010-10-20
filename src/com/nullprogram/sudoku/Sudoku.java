@@ -421,10 +421,8 @@ public class Sudoku extends JComponent
     public final void hint() {
         if (selected != null) {
             byte[][] work = new byte[9][9];
-            copy(display, work);
-            System.out.println("solve in");
+            copy(orig, work);
             solve(work, 0);
-            System.out.println("solve out");
             userSet(selected, work[selected.getX()][selected.getY()]);
         }
     }
