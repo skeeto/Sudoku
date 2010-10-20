@@ -22,7 +22,7 @@ import javax.swing.JComponent;
  * A Sudoku board capable of generating puzzles and interacting.
  */
 public class Sudoku extends JComponent
-    implements KeyListener, MouseListener, Runnable {
+            implements KeyListener, MouseListener, Runnable {
 
     private static final long serialVersionUID = 5546778616302943600L;
 
@@ -409,7 +409,7 @@ public class Sudoku extends JComponent
      */
     private int numSolutions() throws TimeoutException {
         if ((rng.nextInt(200) == 1)
-            && (System.currentTimeMillis() - initTime) > TIMEOUT) {
+                && (System.currentTimeMillis() - initTime) > TIMEOUT) {
             throw new TimeoutException();
         }
         Position pos = null;
