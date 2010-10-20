@@ -719,6 +719,12 @@ public class Sudoku extends JComponent
                 moveSelected(0, 1);
             }
         }
+        if (e.getKeyCode() == KeyEvent.VK_DELETE
+                || e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+            if (selected != null) {
+                userSet(selected, (byte) 0);
+            }
+        }
         repaint();
     }
 
