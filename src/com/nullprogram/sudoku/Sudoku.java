@@ -186,6 +186,19 @@ public class Sudoku extends JComponent
                        (8 - y) * CELL_SIZE + PADDING,
                        CELL_SIZE, CELL_SIZE);
             paintGrid(g);
+
+            String message = "Generating";
+            g.setFont(g.getFont().deriveFont(FONT_SIZE - 4));
+            FontMetrics fm = g.getFontMetrics();
+            int width = fm.stringWidth(message);
+            int height = fm.getHeight();
+            g.setColor(Color.LIGHT_GRAY);
+            g.fillRect(getWidth() / 2 - width / 2 - PADDING,
+                       getHeight() / 2 - height / 2 - PADDING,
+                       width + PADDING * 2, height + PADDING * 2);
+            g.setColor(Color.BLACK);
+            g.drawString(message, getWidth() / 2 - width / 2,
+                         getHeight() / 2 + height / 2);
         }
     }
 
