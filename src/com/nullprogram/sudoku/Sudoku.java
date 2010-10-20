@@ -148,7 +148,22 @@ public class Sudoku extends JComponent
         g.setColor(getBackground());
         g.fillRect(0, 0, getWidth(), getHeight());
 
-        /* Draw marked spaces. */
+        if (!generating) {
+            paintMarks(g);
+            paintGrid(g);
+            paintSelector(g);
+            paintNumbers(g);
+        } else {
+            paintGrid(g);
+        }
+    }
+
+    /**
+     * Draw indiviual cell markings.
+     *
+     * @param g the graphics to paint
+     */
+    private void paintMarks(Graphics g) {
         for (int y = 0; y < 9; y++) {
             for (int x = 0; x < 9; x++) {
                 int marked = orig[x][y];
@@ -164,8 +179,14 @@ public class Sudoku extends JComponent
                            CELL_SIZE, CELL_SIZE);
             }
         }
+    }
 
-        /* Draw the grid. */
+    /**
+     * Draw the grid lines.
+     *
+     * @param g the graphics to paint
+     */
+    private void paintGrid(Graphics g) {
         g.setColor(Color.BLACK);
         int max = 9 * CELL_SIZE + PADDING + 1;
         for (int i = 0; i <= 9; i++) {
@@ -180,8 +201,14 @@ public class Sudoku extends JComponent
             g.drawLine(PADDING - 1, d - 1, max, d - 1);
             g.drawLine(PADDING + 1, d + 1, max, d + 1);
         }
+    }
 
-        /* Draw the selected square. */
+    /**
+     * Draw the selector box.
+     *
+     * @param g the graphics to paint
+     */
+    private void paintSelector(Graphics g) {
         if (selected != null) {
             g.setColor(Color.RED);
             int padding = 3;
@@ -192,7 +219,14 @@ public class Sudoku extends JComponent
                            CELL_SIZE - i * 2, CELL_SIZE - i * 2);
             }
         }
+    }
 
+    /**
+     * Draw the numbers.
+     *
+     * @param g the graphics to paint
+     */
+    private void paintNumbers(Graphics g) {
         /* Set the font. */
         g.setFont(g.getFont().deriveFont(FONT_SIZE));
         Graphics2D g2d = (Graphics2D) g;
