@@ -178,7 +178,6 @@ public class Sudoku extends JComponent
             double angle = animateState * Math.PI * 2f / animateStateMax;
             int x = (int) (Math.cos(angle) * 4.5) + 4;
             int y = (int) (Math.sin(angle) * 4.5) + 4;
-            System.out.println(x + ", " + y);
             g.setColor(Color.GREEN);
             g.fillRect(x * CELL_SIZE + PADDING,
                        y * CELL_SIZE + PADDING,
