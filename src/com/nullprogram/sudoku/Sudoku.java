@@ -1,6 +1,7 @@
 package com.nullprogram.sudoku;
 
 import java.util.Stack;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Collections;
 
@@ -485,10 +486,10 @@ public class Sudoku extends JComponent
         Position pos2 = mirror(pos1);
         used.push(pos1);
         boolean[] possible1 = possible(grid, pos1);
-        for (byte i = 0; i < 10; i++) {
+        for (byte i : rand10()) {
             if (possible1[i]) {
                 set(pos1, i);
-                for (byte j = 0; j < 10; j++) {
+                for (byte j : rand10()) {
                     boolean[] possible2 = possible(grid, pos2);
                     if (possible2[j]) {
                         set(pos2, j);
@@ -564,7 +565,7 @@ public class Sudoku extends JComponent
 
         boolean[] possible = possible(grid, pos);
         int count = 0;
-        for (byte i = 0; i < 10; i++) {
+        for (byte i : rand10()) {
             if (possible[i]) {
                 set(pos, i);
                 count += numSolutions();
@@ -590,6 +591,17 @@ public class Sudoku extends JComponent
     }
 
     /**
+     * Return a randomly sorted array of 0-9.
+     *
+     * @return random list of 0-9
+     */
+    private static Byte[] rand10() {
+        Byte[] nums = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        Collections.shuffle(Arrays.asList(nums));
+        return nums;
+    }
+
+    /**
      * Solve a grid.
      *
      * @param work the sudoku to solve
@@ -612,7 +624,7 @@ public class Sudoku extends JComponent
         int y = pos.getY();
 
         boolean[] possible = possible(work, pos);
-        for (byte i = 0; i < 10; i++) {
+        for (byte i : rand10()) {
             if (possible[i]) {
                 work[x][y] = i;
                 int val = solve(work, depth + 1);
