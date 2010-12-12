@@ -26,7 +26,7 @@ import javax.swing.JComponent;
  * A Sudoku board capable of generating puzzles and interacting.
  */
 public class Sudoku extends JComponent
-            implements KeyListener, MouseListener, Runnable {
+    implements KeyListener, MouseListener, Runnable {
 
     private static final long serialVersionUID = 5546778616302943600L;
 
@@ -450,16 +450,16 @@ public class Sudoku extends JComponent
     private void fadeOut() {
         fade = 0xFF;
         ActionListener listener = new ActionListener() {
-                public void actionPerformed(final ActionEvent e) {
-                    fade -= 2;
-                    if (fade < 192) {
-                        fade = 192;
-                        ((Timer) e.getSource()).stop();
-                    }
-                    setBackground(new Color(fade, fade, fade));
-                    repaint();
+            public void actionPerformed(final ActionEvent e) {
+                fade -= 2;
+                if (fade < 192) {
+                    fade = 192;
+                    ((Timer) e.getSource()).stop();
                 }
-            };
+                setBackground(new Color(fade, fade, fade));
+                repaint();
+            }
+        };
         (new Timer(50, listener)).start();
     }
 
